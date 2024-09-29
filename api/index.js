@@ -5,11 +5,6 @@ import authRoutes from './routes/auth.router.js';
 import dotenv from 'dotenv'
 dotenv.config();
 
-// mongoose.connect(process.env.MONGO).then(()=> {
-//     console.log('connected to MongoDB');
-// }).catch((err)=>{
-//     console.log(err);
-// })
 
 mongoose.connect(process.env.MONGO, {
     serverSelectionTimeoutMS: 20000
@@ -33,3 +28,13 @@ app.listen(3000, ()=> {
 
 app.use('/api/user',userRoutes)
 app.use('/api/auth',authRoutes)
+
+app.use((err,req,res,next)=> {
+    const statusCode = err.statusCode || 500
+    const message = err.message || 'Internal Server Error';
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        statusCode,
+    })
+})
